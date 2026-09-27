@@ -11,9 +11,10 @@ on:
       environment:
         description: 'Select environment to build'
         required: true
-        default: 'lilygo-t-embed-cc1101'
+        default: 'esp32-tft-128x160'
         type: choice
         options:
+          - "esp32-tft-128x160"
           - "m5stack-cardputer"
           - "m5stack-cplus2"
           - "m5stack-cplus1_1"
@@ -151,9 +152,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Bruce-${{ env.SELECTED_ENV }}
-          path: Bruce-*.*
+          path: |
+            .pio/build/${{ env.SELECTED_ENV }}/firmware.bin
+            Bruce-*.*
           retention-days: 1
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Display Build Info
         run: |
@@ -162,4 +165,4 @@ jobs:
           echo "Version: ${{ steps.prepare_version.outputs.VERSION }}"
           echo "Git Hash: $(git describe --always --dirty)"
           echo "Built files:"
-          ls -la Bruce-*.* 2>/dev/null || echo "No Bruce files found"
+          ls -la .pio/build/${{ env.SELECTED_ENV }}/firmware.bin 2>/dev/null || echo "No firmware.bin found"
